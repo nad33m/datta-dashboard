@@ -5,31 +5,132 @@
 
   
   <div class="row"> 
-  <div class="col-md-12">
-  <form method="get" action="{% url 'index-page' %}">
-    {% csrf_token %}
-    <div class="row">
-        <div class="col">
-            <label for="startDate"> From:</label>
-            <input type="date" id="startDate" name="startDate" placeholder="dd-mm-yyyy"
-            min="1997-01-01" max="2030-12-31" class="form-control" required>
+        <div class="col-md-12">
+          <form method="get" action="{% url 'index-page' %}">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col">
+                    <label for="startDate"> From:</label>
+                    <input type="date" id="startDate" name="startDate" placeholder="dd-mm-yyyy"
+                    min="1997-01-01" max="2030-12-31" class="form-control" required>
+                </div>
+                <div class="col">
+                    <label for="endDate"> to:</label>
+                    <input type="date" id="endDate" name="endDate" class="form-control" required>
+                </div> 
+                <div class="col">
+                    <button class="btn btn-info mt-4" type="submit" >Search</button>
+                </div>
+            </div> 
+          </form>
         </div>
-        <div class="col">
-            <label for="endDate"> to:</label>
-            <input type="date" id="endDate" name="endDate" class="form-control" required>
-        </div> 
-        <div class="col">
-            <button class="btn btn-info mt-4" type="submit" >Search</button>
-        </div>
-    </div> 
-  </form>
-</div>
-</div>
+  </div>
 <!-- [ Main Content ] start -->
   <div class="row">
     
-    <!--[ daily sales section ] start-->
-    <div class="col-md-6 col-xl-4">
+    <!--[ Overall Entries section ] start-->
+    <div class="col-md-4 col-xl-4">
+      <div class="card daily-sales">
+        <div class="card-block">
+          <h6 class="mb-4">Total Entries</h6>
+          <div class="row d-flex align-items-center">
+            <div class="col-9">
+              <h3 class="f-w-300 d-flex align-items-center m-b-0"><i
+                  class="feather icon-arrow-up text-c-green f-30 m-r-10"></i>
+                  {{ all_records | length }} </h3>
+            </div>
+            
+            <div class="col-3 text-right">
+              <p class="m-b-0"> {{ emoji }} </p>
+            </div>
+          </div>
+          <div class="progress m-t-30" style="height: 7px;">
+            <div class="progress-bar progress-c-theme" role="progressbar" style="width: 50%;"
+              aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </div>
+      </div>
+    </div> 
+    <!--[ Overall Entries section ] end-->
+    <!--[ Monthly  Entries section ] starts-->
+    <div class="col-md-4 col-xl-4">
+      <div class="card Monthly-sales">
+        <div class="card-block">
+          <h6 class="mb-4">Entries in last 30 days</h6>
+          <div class="row d-flex align-items-center">
+            <div class="col-9">
+              <h3 class="f-w-300 d-flex align-items-center  m-b-0"><i
+                  class="{% if  thirty_days_percentage < 60 %} feather icon-arrow-down text-c-red {% else %} feather icon-arrow-up text-c-green {% endif %} f-30 m-r-10"></i>{{ total_entries }} </h3>
+            </div> 
+            <div class="col-3 text-right">
+              <p class="m-b-0">{{ thirty_days_percentage }}% </p>
+            </div>
+          </div>
+          <div class="progress m-t-30" style="height: 7px;">
+            <div class="progress-bar progress-c-theme2" role="progressbar" style="width: {{ thirty_days_percentage }}%;"
+              aria-valuenow="{{ thirty_days_percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--[ Monthly  Entries section ] end-->
+    
+   
+    <!--[ Region wise graph section ] starts-->
+    <div class="col-md-4 col-xl-4">
+      <div class="card yearly-sales">
+        <div class="card-block">
+          <canvas id="regionChart"  style="width: 300px; height: 400px;"  ></canvas>
+            <script>
+                var ctx = document.getElementById('regionChart').getContext('2d');
+                
+                var data = {
+                    labels: [ {% for region in region_list  %} '{{ region | escapejs }}' , {% endfor %} ],
+                    datasets: [{
+                        data: [ {% for regionCount in region_count %} '{{ regionCount }}', {% endfor %} ],
+                        backgroundColor: ['#36A2EB', '#FF6384','#ffb3b3','#00ff80','#006b00','#00d9cb','#ffd9cb','#ffc700'],
+                        borderColor: [
+                            'rgb(0, 0, 0)',
+                            'rgb(0, 0, 0)',
+                            'rgb(0, 0, 0)',
+                            'rgb(0, 0, 0)',
+                            'rgb(0, 0, 0)',
+                            'rgb(0, 0, 0)',
+                            'rgb(0, 0, 0)',
+                            'rgb(0, 0, 0)'
+                        ],
+                        borderWidth: 1
+                    }],
+                };
+               
+                var options = {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Region-wise # of Entries in last 30 days'
+                        },
+                        legend: {
+                            display: false,  
+                        }
+        
+                    }
+                };
+            
+                var pieChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: data,
+                    options: options,
+                        
+                });
+            </script>
+        </div>
+      </div>
+    </div>
+    <!--[ Region wise graph section ] end-->
+    
+    <!--[ Two other cards check section ] Start-->
+    <div class="col-xl-4 col-md-4">
       <div class="card daily-sales">
         <div class="card-block">
           <h6 class="mb-4">Total Entries</h6>
@@ -53,7 +154,7 @@
     </div> 
     <!--[ daily sales section ] end-->
     <!--[ Monthly  sales section ] starts-->
-    <div class="col-md-6 col-xl-4">
+    <div class="col-xl-4 col-md-4">
       <div class="card Monthly-sales">
         <div class="card-block">
           <h6 class="mb-4">Entries in last 30 days</h6>
@@ -73,30 +174,9 @@
         </div>
       </div>
     </div>
-    <!--[ Monthly  sales section ] end-->
-    <!--[ year  sales section ] starts-->
-    <div class="col-md-12 col-xl-4">
-      <div class="card yearly-sales">
-        <div class="card-block">
-          <h6 class="mb-4">Yearly Sales</h6>
-          <div class="row d-flex align-items-center">
-            <div class="col-9">
-              <h3 class="f-w-300 d-flex align-items-center  m-b-0"><i
-                  class="feather icon-arrow-up text-c-green f-30 m-r-10"></i>$
-                8.638.32</h3>
-            </div>
-            <div class="col-3 text-right">
-              <p class="m-b-0">80%</p>
-            </div>
-          </div>
-          <div class="progress m-t-30" style="height: 7px;">
-            <div class="progress-bar progress-c-theme" role="progressbar" style="width: 70%;"
-              aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!--[ year  sales section ] end-->
+    <!--[ Two other cards check section ] end-->
+
+
     <!--[ Recent Users ] start-->
     <div class="col-xl-8 col-md-6">
       <div class="card Recent-Users">
