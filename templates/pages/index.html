@@ -2,21 +2,19 @@
 {% load static %}
 
 {% block content %}
-
-  
   <div class="row"> 
         <div class="col-md-12">
-          <form method="get" action="{% url 'index-page' %}">
+          <form method="get" action="{% url 'index-page' %}" class="mb-2">
             {% csrf_token %}
             <div class="row">
                 <div class="col">
                     <label for="startDate"> From:</label>
                     <input type="date" id="startDate" name="startDate" placeholder="dd-mm-yyyy"
-                    min="1997-01-01" max="2030-12-31" class="form-control" required>
+                    min="1997-01-01" max="2030-12-31" class="form-control" value="{{ request.GET.startDate }}" required>
                 </div>
                 <div class="col">
                     <label for="endDate"> to:</label>
-                    <input type="date" id="endDate" name="endDate" class="form-control" required>
+                    <input type="date" id="endDate" name="endDate" class="form-control" value="{{ request.GET.endDate }}" required>
                 </div> 
                 <div class="col">
                     <button class="btn btn-info mt-4" type="submit" >Search</button>
@@ -74,13 +72,31 @@
       </div>
     </div>
     <!--[ Monthly  Entries section ] end-->
-    
-   
-    <!--[ Region wise graph section ] starts-->
     <div class="col-md-4 col-xl-4">
+      <div class="card Monthly-sales">
+        <div class="card-block">
+          <h6 class="mb-4">Entries in last 30 days</h6>
+          <div class="row d-flex align-items-center">
+            <div class="col-9">
+              <h3 class="f-w-300 d-flex align-items-center  m-b-0"><i
+                  class="{% if  thirty_days_percentage < 60 %} feather icon-arrow-down text-c-red {% else %} feather icon-arrow-up text-c-green {% endif %} f-30 m-r-10"></i>{{ total_entries }} </h3>
+            </div> 
+            <div class="col-3 text-right">
+              <p class="m-b-0">{{ thirty_days_percentage }}% </p>
+            </div>
+          </div>
+          <div class="progress m-t-30" style="height: 7px;">
+            <div class="progress-bar progress-c-theme2" role="progressbar" style="width: {{ thirty_days_percentage }}%;"
+              aria-valuenow="{{ thirty_days_percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--[ Region wise graph section ] starts-->
+    <div class="col-md-8 col-xl-8">
       <div class="card yearly-sales">
         <div class="card-block">
-          <canvas id="regionChart"  style="width: 300px; height: 400px;"  ></canvas>
+          <canvas id="regionChart"></canvas>
             <script>
                 var ctx = document.getElementById('regionChart').getContext('2d');
                 
@@ -129,52 +145,38 @@
     </div>
     <!--[ Region wise graph section ] end-->
     
-    <!--[ Two other cards check section ] Start-->
-    <div class="col-xl-4 col-md-4">
-      <div class="card daily-sales">
-        <div class="card-block">
-          <h6 class="mb-4">Total Entries</h6>
-          <div class="row d-flex align-items-center">
-            <div class="col-9">
-              <h3 class="f-w-300 d-flex align-items-center m-b-0"><i
-                  class="feather icon-arrow-up text-c-green f-30 m-r-10"></i>
-                  {{ all_records | length }} </h3>
-            </div>
-            
-            <div class="col-3 text-right">
-              <p class="m-b-0"> {{ emoji }} </p>
-            </div>
-          </div>
-          <div class="progress m-t-30" style="height: 7px;">
-            <div class="progress-bar progress-c-theme" role="progressbar" style="width: 50%;"
-              aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
-          </div>
-        </div>
-      </div>
-    </div> 
-    <!--[ daily sales section ] end-->
-    <!--[ Monthly  sales section ] starts-->
-    <div class="col-xl-4 col-md-4">
+    <!--[ Open / Close Pie Chart Section ] Start-->
+    <div class="col-md-4 col-xl-4">
       <div class="card Monthly-sales">
         <div class="card-block">
-          <h6 class="mb-4">Entries in last 30 days</h6>
-          <div class="row d-flex align-items-center">
-            <div class="col-9">
-              <h3 class="f-w-300 d-flex align-items-center  m-b-0"><i
-                  class="{% if  thirty_days_percentage < 60 %} feather icon-arrow-down text-c-red {% else %} feather icon-arrow-up text-c-green {% endif %} f-30 m-r-10"></i>{{ total_entries }} </h3>
-            </div> 
-            <div class="col-3 text-right">
-              <p class="m-b-0">{{ thirty_days_percentage }}% </p>
-            </div>
-          </div>
-          <div class="progress m-t-30" style="height: 7px;">
-            <div class="progress-bar progress-c-theme2" role="progressbar" style="width: {{ thirty_days_percentage }}%;"
-              aria-valuenow="{{ thirty_days_percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
-          </div>
+          <mark> <kbd> Open: {{ dataentry }} </kbd> </mark> 
+            <mark> <kbd> Closed:  {{ closed }} </kbd> </mark> 
+            
+            <canvas id="schoolPieChart" style="width: 300px; height: 400px;"></canvas>
+            <script>
+                var ctx = document.getElementById('schoolPieChart').getContext('2d');
+                var data = {
+                    labels: ['Open', 'Closed'],
+                    datasets: [{
+                        data: [{{ dataentry }}, {{ closed }}],
+                        backgroundColor: ['#36A2EB', '#FF6384'],
+                    }],
+                };
+            
+                var options = {
+                    responsive: true,
+                };
+            
+                var pieChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: data,
+                    options: options,
+                });
+            </script>
         </div>
       </div>
     </div>
-    <!--[ Two other cards check section ] end-->
+    <!--[ Open / Close Pie Chart section ] end-->
 
 
     <!--[ Recent Users ] start-->
@@ -184,35 +186,64 @@
         
 
           <div class="card-header">
-            <h5>Products</h5>
+            <h5>Checklist entries by District Supervisor [alphabetical order]</h5>
           </div>
           <div class="card-block px-0 py-3">
             <div class="table-responsive">
               <table class="table table-hover">
-
+                <thead>
+                  <tr>
+                      <th class=""> completed  </th>
+                      <th class=""> Staff Name  </th>
+                      <th> School Assigned   </th>
+                      <th> School Visited   </th>
+                      
+                      
+                  </tr>
+                </thead>
+                
                 <tbody>
-                  {% for region, regionCount in region_zip %}
-
+                  {% comment %} {% for region, regionCount in region_zip %} {% endcomment %}
+                  {% for staff_name, staff_data in staff_counts.items %}
                     <tr class="unread">
-                      <td><img class="rounded-circle" style="width:40px;" src="{% static 'assets/images/user/avatar-1.jpg' %}"
-                          alt="activity-user">
+                      <td> <h6 class="text-muted"> <i class="fas fa-circle fa-2xl text-c-red m-r-15"></i>
+                        {% comment %} <i class="fas fa-circle text-c-green f-10 m-r-15"></i>  {% endcomment %}
+                        {{ staff_data.coverPercentAge }}%
+                      </h6>   
+                        {% comment %} <img class="rounded-circle" style="width:40px;" src="{% static 'assets/images/user/avatar-1.jpg' %}"
+                          alt="activity-user"> {% endcomment %}
                       </td>
                       <td>
-                        <h6 class="mb-1">{{ region }}</h6>
-                        <p class="m-0">{{ regionCount }}</p>
+                        <h6 class="mb-1"> {{ staff_name }} </h6>
+                        <p class="m-0"> {{ staff_data.districts }} </p>
                       </td>
                       <td>
                         <h6 class="text-muted">
                           <i class="fa-solid fa-cart-shopping"></i>
-                          <i class="fas fa-tag text-c-green f-10 m-r-15"></i>schools in the region
-                          {{ p.price }}
+                          <i class="fas fa-tag text-c-green f-10 m-r-15"></i>schools assigned: 
+                          {{ staff_data.assigned }}
                         </h6>
                       </td>
                       <td>
-                        <a href="#" class="label theme-bg2 text-white f-12">View</a>
-                        <a href="#" class="label theme-bg text-white f-12">Delete</a>
+                        <a href="#" class="label theme-bg2 text-white f-12">{{ staff_data.count }}</a>
+                        <a href="#" class="label theme-bg text-white f-12">{{ staff_data.difference }}</a>
                       </td>
-                    </tr>
+                      <tr>
+                        <td colspan="4">  
+                             <div class="progress m-0"> 
+                                  <div class="progress-bar progress-bar-striped progress-bar-animated {% if staff_data.coverPercentAge >= 0 and staff_data.coverPercentAge <= 50  %} bg-danger 
+                                                          {% elif staff_data.coverPercentAge >= 50 and staff_data.coverPercentAge <= 75 %} bg-warning 
+                                                          {% elif staff_data.coverPercentAge >= 75 and staff_data.coverPercentAge <= 150 %} bg-success
+                                                          
+                                                          {% endif %} theme-bg2 text-black f-12" role="progressbar"
+                                      aria-valuenow="{{ staff_data.coverPercentAge }}"
+                                      aria-valuemin="0" aria-valuemax="100" style="width: {{ staff_data.coverPercentAge }}%;">
+                                      <script>console.log({{ staff_data.coverPercentAge }});</script>
+                                      {{ staff_data.coverPercentAge }}% complete
+                                  </div>
+                              </div>
+                        </td>
+                      </tr>
 
                   {% endfor %}
                 </tbody>
