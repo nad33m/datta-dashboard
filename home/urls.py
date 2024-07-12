@@ -21,9 +21,12 @@ from datetime import datetime, timedelta
 from django.db.models import Count
 from django.views.generic.list import ListView
 from . import views
+from django.contrib.auth.decorators import login_required
 
 urlpatterns = [
   path(''       , views.charts,  name='index-page'),
-  path('tables/', views.tables, name='tables'),
+  path('tables/', views.showrecords, name='tables'),
   path('timesheet/', views.stafftimsheet, name='timesheet-page'),
+  path('login/', views.login, name='login-page'),
+  path('settingss', login_required(views.tsettings, login_url='login'), name='settings-page'),
 ]

@@ -213,3 +213,5 @@ REST_FRAMEWORK = {
     ],
 }
 ########################################
+# LOGIN_REDIRECT_URL = "settings-page"
+# LOGOUT_REDIRECT_URL = "charts-page"

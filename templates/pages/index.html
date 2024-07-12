@@ -75,14 +75,14 @@
     <div class="col-md-4 col-xl-4">
       <div class="card Monthly-sales">
         <div class="card-block">
-          <h6 class="mb-4">Entries in last 30 days</h6>
+          <h6 class="mb-4">Entries today</h6>
           <div class="row d-flex align-items-center">
             <div class="col-9">
               <h3 class="f-w-300 d-flex align-items-center  m-b-0"><i
-                  class="{% if  thirty_days_percentage < 60 %} feather icon-arrow-down text-c-red {% else %} feather icon-arrow-up text-c-green {% endif %} f-30 m-r-10"></i>{{ total_entries }} </h3>
+                  class="{% if  thirty_days_percentage < 60 %} feather icon-arrow-down text-c-red {% else %} feather icon-arrow-up text-c-green {% endif %} f-30 m-r-10"></i>{{ number_entries_today_2 }} </h3>
             </div> 
             <div class="col-3 text-right">
-              <p class="m-b-0">{{ thirty_days_percentage }}% </p>
+              {% comment %} <p class="m-b-0">{{ thirty_days_percentage }}% </p> {% endcomment %}
             </div>
           </div>
           <div class="progress m-t-30" style="height: 7px;">
@@ -180,7 +180,7 @@
 
 
     <!--[ Recent Users ] start-->
-    <div class="col-xl-8 col-md-6">
+    <div class="col-xl-12 col-md-10">
       <div class="card Recent-Users">
 
         
@@ -205,8 +205,14 @@
                 <tbody>
                   {% comment %} {% for region, regionCount in region_zip %} {% endcomment %}
                   {% for staff_name, staff_data in staff_counts.items %}
+                    {% if staff_data.count != 0  %}
                     <tr class="unread">
-                      <td> <h6 class="text-muted"> <i class="fas fa-circle fa-2xl text-c-red m-r-15"></i>
+                      <td> <h6 class="text-muted"> <i class="
+                        {% if staff_data.coverPercentAge >= 0 and staff_data.coverPercentAge <= 50  %} fas fa-circle fa-2xl m-r-15  text-c-red 
+                            {% elif staff_data.coverPercentAge >= 50 and staff_data.coverPercentAge <= 75 %} fas fa-circle fa-2xl m-r-15  text-c-blue  
+                            {% elif staff_data.coverPercentAge >= 75 and staff_data.coverPercentAge <= 150 %} fas fa-circle fa-2xl m-r-15  text-c-green
+                        {% endif %}"></i>
+
                         {% comment %} <i class="fas fa-circle text-c-green f-10 m-r-15"></i>  {% endcomment %}
                         {{ staff_data.coverPercentAge }}%
                       </h6>   
@@ -214,21 +220,22 @@
                           alt="activity-user"> {% endcomment %}
                       </td>
                       <td>
-                        <h6 class="mb-1"> {{ staff_name }} </h6>
+                        <h6 class="mb-1">  {{ staff_name }} </h6>
                         <p class="m-0"> {{ staff_data.districts }} </p>
                       </td>
                       <td>
                         <h6 class="text-muted">
                           <i class="fa-solid fa-cart-shopping"></i>
-                          <i class="fas fa-tag text-c-green f-10 m-r-15"></i>schools assigned: 
+                          <i class="fas fa-tag text-c-red f-10 m-r-15"></i> <b> schools assigned:</b> 
                           {{ staff_data.assigned }}
                         </h6>
                       </td>
                       <td>
-                        <a href="#" class="label theme-bg2 text-white f-12">{{ staff_data.count }}</a>
-                        <a href="#" class="label theme-bg text-white f-12">{{ staff_data.difference }}</a>
+                        <a href="" class="label theme-bg2 text-white  f-12"> {{ staff_data.count }}</a>
+                        <a href="" class="label theme-bg text-dark f-12">Remaining CSs: {{ staff_data.difference }}</a>
                       </td>
-                      <tr>
+                    </tr>
+                    <tr>
                         <td colspan="4">  
                              <div class="progress m-0"> 
                                   <div class="progress-bar progress-bar-striped progress-bar-animated {% if staff_data.coverPercentAge >= 0 and staff_data.coverPercentAge <= 50  %} bg-danger 
@@ -244,7 +251,7 @@
                               </div>
                         </td>
                       </tr>
-
+                    {% endif %}
                   {% endfor %}
                 </tbody>
                 
@@ -252,98 +259,50 @@
             </div>
           </div>
 
-        
+        </div>
+      </div>
+      <div class="col-xl-12 col-md-10">
+        <div class="card Recent-Users">
         
           <div class="card-header">
-            <h5>Recent Users</h5>
+            <h5>Staff with zero entries in last 30 days</h5>
           </div>
           <div class="card-block px-0 py-3">
-            <div class="table-responsive">
-              <table class="table table-hover">
-                <tbody>
-                  <tr class="unread">
-                    <td><img class="rounded-circle" style="width:40px;" src="{% static 'assets/images/user/avatar-1.jpg' %}"
-                        alt="activity-user">
-                    </td>
-                    <td>
-                      <h6 class="mb-1">Isabella Christensen</h6>
-                      <p class="m-0">Lorem Ipsum is simply…</p>
-                    </td>
-                    <td>
-                      <h6 class="text-muted"><i class="fas fa-circle text-c-green f-10 m-r-15"></i>11
-                        MAY 12:56</h6>
-                    </td>
-                    <td><a href="#!" class="label theme-bg2 text-white f-12">Reject</a><a href="#!"
-                        class="label theme-bg text-white f-12">Approve</a>
-                    </td>
-                  </tr>
-                  <tr class="unread">
-                    <td><img class="rounded-circle" style="width:40px;" src="{% static 'assets/images/user/avatar-2.jpg' %}"
-                        alt="activity-user">
-                    </td>
-                    <td>
-                      <h6 class="mb-1">Mathilde Andersen</h6>
-                      <p class="m-0">Lorem Ipsum is simply text of…</p>
-                    </td>
-                    <td>
-                      <h6 class="text-muted"><i class="fas fa-circle text-c-red f-10 m-r-15"></i>11 MAY
-                        10:35</h6>
-                    </td>
-                    <td><a href="#!" class="label theme-bg2 text-white f-12">Reject</a><a href="#!"
-                        class="label theme-bg text-white f-12">Approve</a>
-                    </td>
-                  </tr>
-                  <tr class="unread">
-                    <td><img class="rounded-circle" style="width:40px;" src="{% static 'assets/images/user/avatar-3.jpg' %}"
-                        alt="activity-user">
-                    </td>
-                    <td>
-                      <h6 class="mb-1">Karla Sorensen</h6>
-                      <p class="m-0">Lorem Ipsum is simply…</p>
-                    </td>
-                    <td>
-                      <h6 class="text-muted"><i class="fas fa-circle text-c-green f-10 m-r-15"></i>9 MAY
-                        17:38</h6>
-                    </td>
-                    <td><a href="#!" class="label theme-bg2 text-white f-12">Reject</a><a href="#!"
-                        class="label theme-bg text-white f-12">Approve</a>
-                    </td>
-                  </tr>
-                  <tr class="unread">
-                    <td><img class="rounded-circle" style="width:40px;" src="{% static 'assets/images/user/avatar-1.jpg' %}"
-                        alt="activity-user">
-                    </td>
-                    <td>
-                      <h6 class="mb-1">Ida Jorgensen</h6>
-                      <p class="m-0">Lorem Ipsum is simply text of…</p>
-                    </td>
-                    <td>
-                      <h6 class="text-muted f-w-300"><i class="fas fa-circle text-c-red f-10 m-r-15"></i>19
-                        MAY
-                        12:56</h6>
-                    </td>
-                    <td><a href="#!" class="label theme-bg2 text-white f-12">Reject</a><a href="#!"
-                        class="label theme-bg text-white f-12">Approve</a>
-                    </td>
-                  </tr>
-                  <tr class="unread">
-                    <td><img class="rounded-circle" style="width:40px;" src="{% static 'assets/images/user/avatar-2.jpg' %}"
-                        alt="activity-user">
-                    </td>
-                    <td>
-                      <h6 class="mb-1">Albert Andersen</h6>
-                      <p class="m-0">Lorem Ipsum is simply dummy…</p>
-                    </td>
-                    <td>
-                      <h6 class="text-muted"><i class="fas fa-circle text-c-green f-10 m-r-15"></i>21
-                        July 12:56</h6>
-                    </td>
-                    <td><a href="#!" class="label theme-bg2 text-white f-12">Reject</a><a href="#!"
-                        class="label theme-bg text-white f-12">Approve</a>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+            <div class="table-responsive table-sm">
+              
+                <span class="border border-danger p-1">  </span>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                        <th class=""> Staff Name:  </th>
+                        <th> School Visited  </th>
+                        <th> School Assigned  </th>
+                        <th> Difference  </th>
+                        <th class=""> %age  </th>
+                        </tr>
+                    </thead>
+                    {% for staff_name, staff_data in staff_counts.items %}
+                        <tr class="border-bottom">
+                            {% if staff_data.count == 0  %}
+                                <td> {{ staff_name }} </td>
+                                <td>  {{ staff_data.count }} </td>
+                                <td>  {{ staff_data.assigned }} </td>
+                                <td>  {{ staff_data.difference }} </td>
+                                <td>  {{ staff_data.coverPercentAge }} % </td>
+                                <td>
+                                    
+                                </td>
+                            
+                           {% endif %}
+                        </tr>
+                    {% endfor %}
+                    
+                    </table>
+                 
+            
+              
+
+              
             </div>
           </div>
 
@@ -353,7 +312,7 @@
     <!--[ Recent Users ] end-->
 
     <!-- [ statistics year chart ] start -->
-    <div class="col-xl-4 col-md-6">
+    {% comment %} <div class="col-xl-4 col-md-6">
       <div class="card card-event">
         <div class="card-block">
           <div class="row align-items-center justify-content-center">
@@ -393,10 +352,10 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> {% endcomment %}
     <!-- [ statistics year chart ] end -->
     <!--[social-media section] start-->
-    <div class="col-md-12 col-xl-4">
+    {% comment %} <div class="col-md-12 col-xl-4">
       <div class="card card-social">
         <div class="card-block border-bottom">
           <div class="row align-items-center justify-content-center">
@@ -428,8 +387,8 @@
           </div>
         </div>
       </div>
-    </div>
-    <div class="col-md-6 col-xl-4">
+    </div> {% endcomment %}
+    {% comment %} <div class="col-md-6 col-xl-4">
       <div class="card card-social">
         <div class="card-block border-bottom">
           <div class="row align-items-center justify-content-center">
@@ -495,10 +454,10 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> {% endcomment %}
     <!--[social-media section] end-->
     <!-- [ rating list ] starts-->
-    <div class="col-xl-4 col-md-6">
+    {% comment %} <div class="col-xl-4 col-md-6">
       <div class="card user-list">
         <div class="card-header">
           <h5>Rating</h5>
@@ -563,280 +522,42 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> {% endcomment %}
     <!-- [ rating list ] end-->
     <div class="col-xl-8 col-md-12 m-b-30">
-      <ul class="nav nav-tabs" id="myTab" role="tablist">
-        <li class="nav-item">
-          <a class="nav-link" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
-            aria-selected="false">Today</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active show" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
-            aria-controls="profile" aria-selected="true">This
-            Week</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab"
-            aria-controls="contact" aria-selected="false">All</a>
-        </li>
-      </ul>
-      <div class="tab-content" id="myTabContent">
-        <div class="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
-          <table class="table table-hover">
-            <thead>
-              <tr>
-                <th>User</th>
-                <th>Activity</th>
-                <th>Time</th>
-                <th>Status</th>
-                <th class="text-right"></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>
-                  <h6 class="m-0"><img class="rounded-circle m-r-10" style="width:40px;"
-                      src="{% static 'assets/images/user/avatar-1.jpg' %}" alt="activity-user">Ida Jorgensen</h6>
-                </td>
-                <td>
-                  <h6 class="m-0">The quick brown fox</h6>
-                </td>
-                <td>
-                  <h6 class="m-0">3:28 PM</h6>
-                </td>
-                <td>
-                  <h6 class="m-0 text-c-green">Done</h6>
-                </td>
-                <td class="text-right"><i class="fas fa-circle text-c-green f-10"></i>
-                </td>
-              </tr>
-
-              <tr>
-                <td>
-                  <h6 class="m-0"><img class="rounded-circle  m-r-10" style="width:40px;"
-                      src="{% static 'assets/images/user/avatar-2.jpg' %}" alt="activity-user">Albert Andersen</h6>
-                </td>
-                <td>
-                  <h6 class="m-0">Jumps over the lazy</h6>
-                </td>
-                <td>
-                  <h6 class="m-0">2:37 PM</h6>
-                </td>
-                <td>
-                  <h6 class="m-0 text-c-red">Missed</h6>
-                </td>
-                <td class="text-right"><i class="fas fa-circle text-c-red f-10"></i>
-                </td>
-              </tr>
-
-              <tr>
-                <td>
-                  <h6 class="m-0"><img class="rounded-circle  m-r-10" style="width:40px;"
-                      src="{% static 'assets/images/user/avatar-3.jpg' %}" alt="activity-user">Silje Larsen</h6>
-                </td>
-                <td>
-                  <h6 class="m-0">Dog the quick brown</h6>
-                </td>
-                <td>
-                  <h6 class="m-0">10:23 AM</h6>
-                </td>
-                <td>
-                  <h6 class="m-0 text-c-purple">Delayed</h6>
-                </td>
-                <td class="text-right"><i class="fas fa-circle text-c-purple f-10"></i>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <h6 class="m-0"><img class="rounded-circle  m-r-10" style="width:40px;"
-                      src="{% static 'assets/images/user/avatar-1.jpg' %}" alt="activity-user">Ida Jorgensen</h6>
-                </td>
-                <td>
-                  <h6 class="m-0">The quick brown fox</h6>
-                </td>
-                <td>
-                  <h6 class="m-0">4:28 PM</h6>
-                </td>
-                <td>
-                  <h6 class="m-0 text-c-green">Done</h6>
-                </td>
-                <td class="text-right"><i class="fas fa-circle text-c-green f-10"></i>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-        </div>
-        <div class="tab-pane fade active show" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-          <table class="table table-hover">
-            <thead>
-              <tr>
-                <th>User</th>
-                <th>Activity</th>
-                <th>Time</th>
-                <th>Status</th>
-                <th class="text-right"></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>
-                  <h6 class="m-0"><img class="rounded-circle  m-r-10" style="width:40px;"
-                      src="{% static 'assets/images/user/avatar-2.jpg' %}" alt="activity-user">Albert Andersen</h6>
-                </td>
-                <td>
-                  <h6 class="m-0">Jumps over the lazy</h6>
-                </td>
-                <td>
-                  <h6 class="m-0">2:37 PM</h6>
-                </td>
-                <td>
-                  <h6 class="m-0 text-c-red">Missed</h6>
-                </td>
-                <td class="text-right"><i class="fas fa-circle text-c-red f-10"></i>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <h6 class="m-0"><img class="rounded-circle m-r-10" style="width:40px;"
-                      src="{% static 'assets/images/user/avatar-1.jpg' %}" alt="activity-user">Ida Jorgensen</h6>
-                </td>
-                <td>
-                  <h6 class="m-0">The quick brown fox</h6>
-                </td>
-                <td>
-                  <h6 class="m-0">3:28 PM</h6>
-                </td>
-                <td>
-                  <h6 class="m-0 text-c-green">Done</h6>
-                </td>
-                <td class="text-right"><i class="fas fa-circle text-c-green f-10"></i>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <h6 class="m-0"><img class="rounded-circle  m-r-10" style="width:40px;"
-                      src="{% static 'assets/images/user/avatar-1.jpg' %}" alt="activity-user">Ida Jorgensen</h6>
-                </td>
-                <td>
-                  <h6 class="m-0">The quick brown fox</h6>
-                </td>
-                <td>
-                  <h6 class="m-0">4:28 PM</h6>
-                </td>
-                <td>
-                  <h6 class="m-0 text-c-green">Done</h6>
-                </td>
-                <td class="text-right"><i class="fas fa-circle text-c-green f-10"></i>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <h6 class="m-0"><img class="rounded-circle  m-r-10" style="width:40px;"
-                      src="{% static 'assets/images/user/avatar-3.jpg' %}" alt="activity-user">Silje Larsen</h6>
-                </td>
-                <td>
-                  <h6 class="m-0">Dog the quick brown</h6>
-                </td>
-                <td>
-                  <h6 class="m-0">10:23 AM</h6>
-                </td>
-                <td>
-                  <h6 class="m-0 text-c-purple">Delayed</h6>
-                </td>
-                <td class="text-right"><i class="fas fa-circle text-c-purple f-10"></i>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-        </div>
-        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
-          <table class="table table-hover">
-            <thead>
-              <tr>
-                <th>User</th>
-                <th>Activity</th>
-                <th>Time</th>
-                <th>Status</th>
-                <th class="text-right"></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>
-                  <h6 class="m-0"><img class="rounded-circle  m-r-10" style="width:40px;"
-                      src="{% static 'assets/images/user/avatar-3.jpg' %}" alt="activity-user">Silje Larsen</h6>
-                </td>
-                <td>
-                  <h6 class="m-0">Dog the quick brown</h6>
-                </td>
-                <td>
-                  <h6 class="m-0">10:23 AM</h6>
-                </td>
-                <td>
-                  <h6 class="m-0 text-c-purple">Delayed</h6>
-                </td>
-                <td class="text-right"><i class="fas fa-circle text-c-purple f-10"></i>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <h6 class="m-0"><img class="rounded-circle m-r-10" style="width:40px;"
-                      src="{% static 'assets/images/user/avatar-1.jpg' %}" alt="activity-user">Ida Jorgensen</h6>
-                </td>
-                <td>
-                  <h6 class="m-0">The quick brown fox</h6>
-                </td>
-                <td>
-                  <h6 class="m-0">3:28 PM</h6>
-                </td>
-                <td>
-                  <h6 class="m-0 text-c-green">Done</h6>
-                </td>
-                <td class="text-right"><i class="fas fa-circle text-c-green f-10"></i>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <h6 class="m-0"><img class="rounded-circle  m-r-10" style="width:40px;"
-                      src="{% static 'assets/images/user/avatar-2.jpg' %}" alt="activity-user">Albert Andersen</h6>
-                </td>
-                <td>
-                  <h6 class="m-0">Jumps over the lazy</h6>
-                </td>
-                <td>
-                  <h6 class="m-0">2:37 PM</h6>
-                </td>
-                <td>
-                  <h6 class="m-0 text-c-red">Missed</h6>
-                </td>
-                <td class="text-right"><i class="fas fa-circle text-c-red f-10"></i>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <h6 class="m-0"><img class="rounded-circle  m-r-10" style="width:40px;"
-                      src="{% static 'assets/images/user/avatar-1.jpg' %}" alt="activity-user">Ida Jorgensen</h6>
-                </td>
-                <td>
-                  <h6 class="m-0">The quick brown fox</h6>
-                </td>
-                <td>
-                  <h6 class="m-0">4:28 PM</h6>
-                </td>
-                <td>
-                  <h6 class="m-0 text-c-green">Done</h6>
-                </td>
-                <td class="text-right"><i class="fas fa-circle text-c-green f-10"></i>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+      {% comment %} <div style="width: 300px; height: 400px;"> {% endcomment %}
+        <canvas id="lineChart"></canvas>   
+        <script>
+            var ctx = document.getElementById('lineChart').getContext('2d');
+            var labels = [];
+            var data = [];
+            {% comment %} Extracting values for months and entries  {% endcomment %}
+            {% for item in result_list %}
+                labels.push('{{ item.0 | escapejs }}');
+                data.push({{ item.1 }});   
+            {% endfor %}
+    
+            var chartData = {
+                labels: labels,
+                datasets: [{
+                    label: 'Month wise entries',
+                    data: data,
+                    fill: false,
+                    borderColor: 'rgb(75, 192, 192)'
+                }]
+    
+            };
+            var chart = new Chart(ctx, {
+                type: 'line',
+                data: chartData
+                
+            });
+        </script>
+        {% comment %} ---------------------------------------------  {% endcomment %}
+        
+    
+          
+   </div>
 
   </div>
   <!-- [ Main Content ] end -->
